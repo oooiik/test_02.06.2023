@@ -1,0 +1,77 @@
+version: "3.8"
+services:
+  nginx:
+    container_name: nginx_${COMPOSE_PROJECT_NAME}
+    image: nginx:latest
+    working_dir: /app
+    volumes:
+      - ./:/app
+      - ./docker/nginx/templates:/etc/nginx/templates
+    networks:
+      default:
+        ipv4_address: ${COMPOSE_PROJECT_NETWORK}.2
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    depends_on:
+      - php-fpm
+  posgresql:
+    container_name: posgresql_${COMPOSE_PROJECT_NAME}
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: $DB_USERNAME
+      POSTGRES_PASSWORD: $DB_PASSWORD
+      POSTGRES_DB: $DB_DATABASE
+    volumes:
+      - posgresql:/var/lib/postgresql/data
+    networks:
+      default:
+        ipv4_address: ${COMPOSE_PROJECT_NETWORK}.3
+  php-fpm:
+    container_name: php_fpm_${COMPOSE_PROJECT_NAME}
+    image: php_fpm_${COMPOSE_PROJECT_NAME}
+    build:
+      args:
+        user: $COMPOSE_USER_NAME
+        uid: $COMPOSE_USER_UID
+      context: ./
+      dockerfile: docker/php-fpm/Dockerfile
+    volumes:
+      - ./:/app
+      - ./docker/php-fpm/php.ini:/usr/local/etc/php/php.ini
+      - ./docker/php-fpm/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
+    networks:
+      default:
+        ipv4_address: ${COMPOSE_PROJECT_NETWORK}.4
+    depends_on:
+      - posgresql
+  redis:
+    container_name: redis_${COMPOSE_PROJECT_NAME}
+    image: redis:latest
+    networks:
+      default:
+        ipv4_address: ${COMPOSE_PROJECT_NETWORK}.5
+
+  node:
+    container_name: node_${COMPOSE_PROJECT_NAME}
+    image: node:lts
+    working_dir: /app
+    user: $COMPOSE_USER_UID
+    volumes:
+      - ./:/app
+    networks:
+      default:
+        ipv4_address: ${COMPOSE_PROJECT_NETWORK}.5
+
+volumes:
+  posgresql:
+    driver: local
+
+networks:
+  default:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: ${COMPOSE_PROJECT_NETWORK}.0/16
+          gateway: ${COMPOSE_PROJECT_NETWORK}.1
+
