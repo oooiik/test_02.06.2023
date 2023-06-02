@@ -4,6 +4,22 @@ namespace App\Http\Requests\User;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * @OA\Schema(
+ *     title="UserStoreRequest",
+ *     description="User store request",
+ *     schema="UserStoreRequest",
+ *     required={"name","email","password","password_confirmation","phone","address"},
+ *     example={
+ *         "name":"John Doe",
+ *         "email":"email@mail.com",
+ *         "password":"password",
+ *         "password_confirmation":"password",
+ *         "phone":"0123456789",
+ *         "address":"123 Street, City, Country"
+ *     }
+ * )
+ */
 class UserStoreRequest extends FormRequest
 {
     public function authorize(): bool
