@@ -14,15 +14,15 @@ services:
       - 'host.docker.internal:host-gateway'
     depends_on:
       - php-fpm
-  posgresql:
-    container_name: posgresql_${COMPOSE_PROJECT_NAME}
+  postgresql:
+    container_name: postgresql_${COMPOSE_PROJECT_NAME}
     image: postgres:latest
     environment:
       POSTGRES_USER: $DB_USERNAME
       POSTGRES_PASSWORD: $DB_PASSWORD
       POSTGRES_DB: $DB_DATABASE
     volumes:
-      - posgresql:/var/lib/postgresql/data
+      - postgresql:/var/lib/postgresql/data
     networks:
       default:
         ipv4_address: ${COMPOSE_PROJECT_NETWORK}.3
@@ -43,7 +43,7 @@ services:
       default:
         ipv4_address: ${COMPOSE_PROJECT_NETWORK}.4
     depends_on:
-      - posgresql
+      - postgresql
   redis:
     container_name: redis_${COMPOSE_PROJECT_NAME}
     image: redis:latest
@@ -63,7 +63,7 @@ services:
         ipv4_address: ${COMPOSE_PROJECT_NETWORK}.5
 
 volumes:
-  posgresql:
+  postgresql:
     driver: local
 
 networks:
