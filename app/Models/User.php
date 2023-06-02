@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -59,18 +59,17 @@ class User extends Authenticatable
         $this->roles()->detach($role);
     }
 
-    public function syncRoles(string|Role $roles): void
+    /**
+     * @param Collection|Role[] $roles
+     * @return void
+     */
+    public function syncRoles(Collection|array $roles): void
     {
         $this->roles()->sync($roles);
     }
 
-    public function hasPermission(string|Permission $permission): bool
+    public function hasPermission(Permission $permission): bool
     {
-        if (is_string($permission)) {
-            return $this->roles()
-                ->has('permission', '>=', 1)
-                ->exists();
-        }
         return $this->roles()
             ->has('permission', '=', $permission->id)
             ->exists();
