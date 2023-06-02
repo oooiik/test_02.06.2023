@@ -12,20 +12,19 @@ class AuthExecutor extends Executor
         return new User();
     }
 
-    public function login(array $validated): array|bool
+    public function login(array $validated): object|bool
     {
         $token = auth()->attempt($validated);
         if (!$token) return false;
-        return [
+        return (object)[
             'token' => $token,
             'user' => auth()->user()
         ];
     }
 
-    public function logout(): bool
+    public function logout(): void
     {
         auth()->logout();
-        return true;
     }
 
     public function me(): Model|array|null
@@ -33,16 +32,17 @@ class AuthExecutor extends Executor
         return auth()->user();
     }
 
-    public function register(array $validated): Model|array|null
+    public function register(array $validated): object|null
     {
         /** @var User $user */
         $user = $this->model()::query()->create($validated);
         if (!$user) return null;
         $user->assignRole('user');
-        return $this->login([
-            'email' => $validated['email'],
-            'password' => $validated['password']
-        ]);
+        $token = auth()->attempt($validated);
+        return (object)[
+            'token' => $token,
+            'user' => $user
+        ];
     }
 
 }

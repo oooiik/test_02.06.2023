@@ -1,0 +1,301 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Test 02.01.2023",
+        "version": "0.1"
+    },
+    "paths": {
+        "/api/auth/login": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Login",
+                "description": "Login",
+                "operationId": "authLogin",
+                "requestBody": {
+                    "description": "Login",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AuthLoginRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthLoginResource"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseUnauthorizedResource"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseUnprocessableEntityResource"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/auth/logout": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Logout",
+                "description": "Logout",
+                "operationId": "authLogout",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseSuccessResource"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseUnauthorizedResource"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/auth/me": {
+            "get": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Me",
+                "description": "Me",
+                "operationId": "authMe",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserResource"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseUnauthorizedResource"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/auth/register": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Register",
+                "description": "Register",
+                "operationId": "authRegister",
+                "requestBody": {
+                    "description": "Register",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AuthRegisterRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthRegisterResource"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseServerErrorResource"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "AuthLoginRequest": {
+                "title": "AuthLoginRequest",
+                "description": "Auth login request",
+                "required": [
+                    "email",
+                    "password"
+                ],
+                "example": {
+                    "email": "email@mail.com",
+                    "password": "password"
+                }
+            },
+            "AuthRegisterRequest": {
+                "title": "AuthRegisterRequest",
+                "description": "Auth register request",
+                "example": {
+                    "name": "John Doe",
+                    "email": "email@mail.com",
+                    "password": "password",
+                    "password_confirmation": "password",
+                    "phone": "1234567890",
+                    "address": "Address 123"
+                }
+            },
+            "AuthLoginResource": {
+                "title": "AuthLoginResource",
+                "description": "Auth login resource",
+                "example": {
+                    "token": "token",
+                    "user": {
+                        "id": 1,
+                        "name": "John Doe",
+                        "email": "email@mail.com",
+                        "phone": "1234567890",
+                        "email_verified_at": "2021-01-01 00:00:00",
+                        "created_at": "2021-01-01 00:00:00"
+                    }
+                }
+            },
+            "AuthRegisterResource": {
+                "title": "AuthRegisterResource",
+                "description": "Auth register resource",
+                "example": {
+                    "token": "token",
+                    "user": [],
+                    "message": "Registered successfully"
+                }
+            },
+            "BaseCreatedResource": {
+                "title": "BaseCreatedResource",
+                "description": "Base created resource",
+                "example": {
+                    "message": "Created",
+                    "data": [],
+                    "success": true
+                }
+            },
+            "BaseErrorResource": {
+                "title": "BaseErrorResource",
+                "description": "Base error resource",
+                "example": {
+                    "message": "Error",
+                    "data": null,
+                    "success": false
+                }
+            },
+            "BaseServerErrorResource": {
+                "title": "BaseServerErrorResource",
+                "description": "Base server error resource",
+                "example": {
+                    "message": "Server error",
+                    "data": null,
+                    "success": false
+                }
+            },
+            "BaseSuccessResource": {
+                "title": "BaseSuccessResource",
+                "description": "Base success resource",
+                "example": {
+                    "message": "Success",
+                    "data": null,
+                    "success": true
+                }
+            },
+            "BaseUnauthorizedResource": {
+                "title": "BaseUnauthorizedResource",
+                "description": "Base unauthorized resource",
+                "example": {
+                    "message": "Unauthorized",
+                    "data": null,
+                    "success": false
+                }
+            },
+            "BaseUnprocessableEntityResource": {
+                "title": "BaseUnprocessableEntityResource",
+                "description": "Base unprocessable entity resource",
+                "example": {
+                    "message": "Unprocessable entity",
+                    "errors": {
+                        "field": [
+                            "Error message"
+                        ]
+                    },
+                    "success": false
+                }
+            },
+            "UserResource": {
+                "title": "UserResource",
+                "description": "User resource",
+                "example": {
+                    "id": 1,
+                    "name": "John Doe",
+                    "email": "eamil@mail.com",
+                    "phone": "1234567890",
+                    "email_verified_at": "2021-01-01 00:00:00",
+                    "created_at": "2021-01-01 00:00:00"
+                }
+            }
+        }
+    }
+}

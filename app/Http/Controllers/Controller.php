@@ -9,6 +9,14 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
 
+/**
+ * @OA\Info(
+ *     title="Test 02.01.2023",
+ *     version="0.1"
+ * )
+ */
+//class OpenApi {}
+
 abstract class Controller extends BaseController
 {
     use AuthorizesRequests, ValidatesRequests;
