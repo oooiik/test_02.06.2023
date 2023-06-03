@@ -8,6 +8,14 @@ use App\Http\Requests\User\UserUpdateRequest;
 use App\Http\Resources\User\UserResource;
 use Illuminate\Http\JsonResponse;
 
+/**
+ * @OA\Tag(
+ *     name="Users",
+ *     description="API Endpoints of Users"
+ * )
+ *
+ * @method UserExecutor executor()
+ */
 class UserController extends Controller
 {
     protected $executorClass = UserExecutor::class;
@@ -217,7 +225,7 @@ class UserController extends Controller
      *         )
      *     ),
      *     @OA\Response(
-     *         response=200,
+     *         response=204,
      *         description="Success",
      *         @OA\JsonContent(
      *             type="object",
@@ -242,6 +250,6 @@ class UserController extends Controller
     {
         $success = $this->executor()->destroy($id);
         if (!$success) return $this->responseNotFound('User not found');
-        return $this->responseSuccess(null, 'User deleted');
+        return $this->responseSuccess(null, 'User deleted', 204);
     }
 }

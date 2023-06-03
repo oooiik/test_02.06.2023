@@ -25,7 +25,7 @@ class AuthExecutor extends Executor
 
     public function logout(): void
     {
-        auth()->logout();
+        auth()->user()->tokens()->delete();
     }
 
     public function me(): Model|array|null

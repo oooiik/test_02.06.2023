@@ -5,6 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @extends \Illuminate\Database\Eloquent\Model<\App\Models\Permission>
+ * @property int $id
+ * @property string $model
+ * @property string $action
+ */
 class Permission extends Model
 {
     use HasFactory;
@@ -12,12 +18,19 @@ class Permission extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'title',
+        'model',
+        'action'
+    ];
+
+    protected $casts = [
+        'id' => 'integer',
+        'model' => 'string',
+        'action' => 'string',
     ];
 
     public function roles(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
-        return $this->belongsToMany(Role::class);
+        return $this->belongsToMany(Role::class, 'role_permission', 'permission_id', 'role_id');
     }
 
     public function giveRoleTo(string|Role $role): void
@@ -52,7 +65,7 @@ class Permission extends Model
         if (is_string($role)) {
             return $this->roles()->where('title', $role)->exists();
         }
-        return (bool) $role->intersect($this->roles)->count();
+        return (bool)$role->intersect($this->roles)->count();
     }
 
 }

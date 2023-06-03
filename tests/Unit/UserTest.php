@@ -22,6 +22,7 @@ class UserTest extends TestCase
 
     public function test_index_method(): void
     {
+        $this->actingAs($this->user);
         $response = $this->getJson('/api/users');
         $response->assertStatus(200);
         $response->assertJsonStructure([
@@ -40,6 +41,7 @@ class UserTest extends TestCase
 
     public function test_store_method_success(): void
     {
+        $this->actingAs($this->user);
         $make = User::factory()->make();
         $makeArray = $make->toArray();
         $makeArray['password'] = 'password';
@@ -63,12 +65,14 @@ class UserTest extends TestCase
 
     public function test_store_method_fail(): void
     {
+        $this->actingAs($this->user);
         $response = $this->postJson('/api/users', []);
         $response->assertStatus(422);
     }
 
     public function test_show_method_success(): void
     {
+        $this->actingAs($this->user);
         $user = User::factory()->create();
 
         $response = $this->getJson('/api/users/' . $user->id);
@@ -88,12 +92,14 @@ class UserTest extends TestCase
 
     public function test_show_method_fail(): void
     {
+        $this->actingAs($this->user);
         $response = $this->getJson('/api/users/0');
         $response->assertStatus(404);
     }
 
     public function test_update_method_success(): void
     {
+        $this->actingAs($this->user);
         $user = User::factory()->create();
         $make = User::factory()->make();
 
@@ -116,16 +122,18 @@ class UserTest extends TestCase
 
     public function test_update_method_fail(): void
     {
+        $this->actingAs($this->user);
         $response = $this->putJson('/api/users/0', []);
         $response->assertStatus(404);
     }
 
     public function test_destroy_method_success(): void
     {
+        $this->actingAs($this->user);
         $user = User::factory()->create();
 
         $response = $this->deleteJson('/api/users/' . $user->id);
-        $response->assertStatus(200);
+        $response->assertStatus(204);
 
         $response->assertJsonStructure([
             'data' => [],
@@ -136,6 +144,7 @@ class UserTest extends TestCase
 
     public function test_destroy_method_fail(): void
     {
+        $this->actingAs($this->user);
         $response = $this->deleteJson('/api/users/0');
         $response->assertStatus(404);
     }

@@ -23,7 +23,14 @@ class Role extends Model
 
     public function permissions(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
-        return $this->belongsToMany(Permission::class, 'role_permission');
+        return $this->belongsToMany(
+            Permission::class,
+            'role_permission',
+            'role_id',
+            'permission_id',
+            'id',
+            'id'
+        );
     }
 
     public function givePermissionTo(string|Permission $permission): void
@@ -48,15 +55,16 @@ class Role extends Model
      */
     public function syncPermissions(array|Collection $permissions): void
     {
+        $this->permissions()->detach();
         $this->permissions()->sync($permissions);
     }
 
-    public function hasPermission(string|Permission $permission): bool
+    public function hasPermission(int|Permission $permission): bool
     {
-        if (is_string($permission)) {
-            return $this->permissions()->where('title', $permission)->exists();
+        if (is_int($permission)) {
+            return $this->permissions()->where('permissions.id', $permission)->exists();
         }
-        return (bool)$permission->intersect($this->permissions)->count();
+        return $this->permissions()->where('permissions.id', $permission->id)->exists();
     }
 
 }
