@@ -2,16 +2,16 @@
 
 namespace App\Executor;
 
-use App\Models\User;
+use App\Models\{{ model }};
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\TraitCrudExecutorMethods;
 
-class UserExecutor extends Executor
+class {{ name }} extends Executor
 {
     use TraitCrudExecutorMethods;
 
     public function model(): Model
     {
-        return new User();
+        return new {{ model }}();
     }
 }
