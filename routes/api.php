@@ -31,4 +31,5 @@ Route::group([
 Route::middleware('auth:api')->group(function () {
     Route::apiResource('/users', \App\Http\Controllers\UserController::class)->names('users');
     Route::apiResource('/roles', \App\Http\Controllers\RoleController::class)->names('roles');
+    Route::apiResource('/permissions', \App\Http\Controllers\PermissionController::class)->names('permissions');
 });

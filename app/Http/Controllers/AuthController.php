@@ -8,6 +8,14 @@ use App\Http\Requests\Auth\AuthRegisterRequest;
 use App\Http\Resources\User\UserResource;
 use Illuminate\Http\JsonResponse;
 
+/**
+ * @OA\Tag(
+ *     name="Auth",
+ *     description="API Endpoints of Auth"
+ * )
+ *
+ * @method AuthExecutor executor()
+ */
 class AuthController extends Controller
 {
     public $executorClass = AuthExecutor::class;

@@ -135,10 +135,6 @@ class UserTest extends TestCase
         $response = $this->deleteJson('/api/users/' . $user->id);
         $response->assertStatus(204);
 
-        $response->assertJsonStructure([
-            'data' => [],
-        ]);
-
         $this->assertDatabaseMissing('users', $user->toArray());
     }
 

@@ -11,7 +11,7 @@ use Illuminate\Foundation\Http\FormRequest;
  *     schema="AuthLoginRequest",
  *     required={"email","password"},
  *     example={
- *         "email":"email@mail.com",
+ *         "email":"admin@test.com",
  *         "password":"password"
  *    }
  * )
