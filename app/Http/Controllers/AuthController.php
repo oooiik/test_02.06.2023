@@ -5,12 +5,6 @@ namespace App\Http\Controllers;
 use App\Executor\AuthExecutor;
 use App\Http\Requests\Auth\AuthLoginRequest;
 use App\Http\Requests\Auth\AuthRegisterRequest;
-use App\Http\Resources\Auth\AuthLoginResource;
-use App\Http\Resources\Auth\AuthRegisterResource;
-use App\Http\Resources\Base\BaseResource;
-use App\Http\Resources\Base\BaseServerErrorResource;
-use App\Http\Resources\Base\BaseSuccessResource;
-use App\Http\Resources\Base\BaseUnauthorizedResource;
 use App\Http\Resources\User\UserResource;
 use Illuminate\Http\JsonResponse;
 
@@ -33,26 +27,38 @@ class AuthController extends Controller
      *     @OA\Response(
      *         response=200,
      *         description="Success",
-     *         @OA\JsonContent(ref="#/components/schemas/AuthLoginResource")
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Logged in successfully"),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(property="user", ref="#/components/schemas/UserResource"),
+     *                 @OA\Property(property="token", type="string", example="token")
+     *             )
+     *         )
      *     ),
      *     @OA\Response(
      *         response=401,
      *         description="Unauthorized",
-     *         @OA\JsonContent(ref="#/components/schemas/BaseUnauthorizedResource")
+     *         @OA\JsonContent(ref="#/components/schemas/ResponseUnauthorized")
      *     ),
      *     @OA\Response(
      *         response=422,
      *         description="Unprocessable Entity",
-     *         @OA\JsonContent(ref="#/components/schemas/BaseUnprocessableEntityResource")
+     *         @OA\JsonContent(ref="#/components/schemas/ResponseUnprocessableEntity")
      *    )
      * )
      */
     public function login(AuthLoginRequest $request): JsonResponse
     {
         $logged = $this->executor()->login($request->validated());
-        if (!$logged) return BaseUnauthorizedResource::resource();
-        $resource = new AuthLoginResource($logged);
-        return $this->responseSuccess($resource, 'Logged in successfully');
+        if (!$logged) return $this->responseUnauthorized('Invalid credentials');
+        return $this->responseSuccess([
+            'user' => new UserResource($logged['user']),
+            'token' => $logged['token']
+        ], 'Logged in successfully');
     }
 
     /**
@@ -66,19 +72,24 @@ class AuthController extends Controller
      *     @OA\Response(
      *         response=200,
      *         description="Success",
-     *         @OA\JsonContent(ref="#/components/schemas/BaseSuccessResource")
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Logged out successfully"),
+     *             @OA\Property(property="data", example=null)
+     *         )
      *     ),
      *     @OA\Response(
      *         response=401,
      *         description="Unauthorized",
-     *         @OA\JsonContent(ref="#/components/schemas/BaseUnauthorizedResource")
+     *         @OA\JsonContent(ref="#/components/schemas/ResponseUnauthorized")
      *     )
      * )
      */
     public function logout(): JsonResponse
     {
         $this->executor()->logout();
-        return BaseResource::resource([], 'Logged out successfully');
+        return $this->responseSuccess(null, 'Logged out successfully');
     }
 
     /**
@@ -92,20 +103,25 @@ class AuthController extends Controller
      *     @OA\Response(
      *         response=200,
      *         description="Success",
-     *         @OA\JsonContent(ref="#/components/schemas/UserResource")
-     *    ),
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="data", type="object", ref="#/components/schemas/UserResource"),
+     *             @OA\Property(property="message", type="string", example="User retrieved successfully")
+     *         )
+     *     ),
      *     @OA\Response(
      *         response=401,
      *         description="Unauthorized",
-     *         @OA\JsonContent(ref="#/components/schemas/BaseUnauthorizedResource")
+     *         @OA\JsonContent(ref="#/components/schemas/ResponseUnauthorized")
      *     )
      * )
      */
     public function me(): JsonResponse
     {
         $user = $this->executor()->me();
-        if (!$user) return BaseUnauthorizedResource::resource();
-        return BaseSuccessResource::resource(new UserResource($user), 'User retrieved successfully');
+        if (!$user) return $this->responseUnauthorized('Unauthorized');
+        return $this->responseSuccess(new UserResource($user), 'User retrieved successfully');
     }
 
     /**
@@ -123,19 +139,32 @@ class AuthController extends Controller
      *     @OA\Response(
      *         response=201,
      *         description="Success",
-     *         @OA\JsonContent(ref="#/components/schemas/AuthRegisterResource")
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(property="user", type="object", ref="#/components/schemas/UserResource"),
+     *                 @OA\Property(property="token", type="string", example="token"),
+     *             ),
+     *             @OA\Property(property="message", type="string", example="Registered successfully")
+     *         )
      *     ),
      *     @OA\Response(
      *         response=500,
      *         description="Server Error",
-     *         @OA\JsonContent(ref="#/components/schemas/BaseServerErrorResource")
+     *         @OA\JsonContent(ref="#/components/schemas/ResponseError")
      *     )
      * )
      */
     public function register(AuthRegisterRequest $request): JsonResponse
     {
         $data = $this->executor()->register($request->validated());
-        if (!$data) return BaseServerErrorResource::resource(null, 'Failed to register');
-        return AuthRegisterResource::resource($data);
+        if (!$data) return $this->responseError('Failed to register', 500);
+        return $this->responseCreated([
+            'user' => new UserResource($data['user']),
+            'token' => $data['token']
+        ], 'Registered successfully');
     }
 }

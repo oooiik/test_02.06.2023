@@ -4,6 +4,7 @@ namespace App\Executor;
 
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 class AuthExecutor extends Executor
 {
@@ -12,12 +13,12 @@ class AuthExecutor extends Executor
         return new User();
     }
 
-    public function login(array $validated): object|bool
+    public function login(array $validated): array|bool
     {
-        $token = auth()->attempt($validated);
-        if (!$token) return false;
-        return (object)[
-            'token' => $token,
+        $ok = auth()->attempt($validated);
+        if (!$ok) return false;
+        return [
+            'token' => auth()->user()->createToken('auth_token')->plainTextToken,
             'user' => auth()->user()
         ];
     }
@@ -32,15 +33,25 @@ class AuthExecutor extends Executor
         return auth()->user();
     }
 
-    public function register(array $validated): object|null
+    public function register(array $validated): array|null
     {
         /** @var User $user */
         $user = $this->model()::query()->create($validated);
-        if (!$user) return null;
+        if (!$user) {
+            Log::error('Error creating user');
+            return null;
+        }
         $user->assignRole('user');
-        $token = auth()->attempt($validated);
-        return (object)[
-            'token' => $token,
+        $ok = auth()->attempt([
+            'email' => $user->email,
+            'password' => $validated['password']
+        ]);
+        if (!$ok) {
+            Log::error('Error creating user');
+            return null;
+        }
+        return [
+            'token' => auth()->user()->createToken('auth_token')->plainTextToken,
             'user' => $user
         ];
     }

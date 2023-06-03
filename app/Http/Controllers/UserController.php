@@ -5,12 +5,7 @@ namespace App\Http\Controllers;
 use App\Executor\UserExecutor;
 use App\Http\Requests\User\UserStoreRequest;
 use App\Http\Requests\User\UserUpdateRequest;
-use App\Http\Resources\Base\BaseNotFoundResource;
-use App\Http\Resources\Base\BaseSuccessResource;
-use App\Http\Resources\User\UserIndexResource;
-use App\Http\Resources\User\UserShowResource;
-use App\Http\Resources\User\UserStoreResource;
-use App\Http\Resources\User\UserUpdateResource;
+use App\Http\Resources\User\UserResource;
 use Illuminate\Http\JsonResponse;
 
 class UserController extends Controller
@@ -24,27 +19,31 @@ class UserController extends Controller
      *     summary="Get all users",
      *     description="Get all users",
      *     operationId="usersIndex",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Response(
      *         response=200,
      *         description="Success",
-     *         @OA\PathItem ( ref="#/components/schemas/UserResource" )
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/UserResource")
+     *             ),
+     *             @OA\Property( property="message", type="string", example="Users list" )
+     *         )
      *     ),
      *     @OA\Response(
      *         response=401,
      *         description="Unauthorized",
-     *         @OA\JsonContent(ref="#/components/schemas/BaseUnauthorizedResource")
-     *     ),
-     *     @OA\Response(
-     *         response=422,
-     *         description="Unprocessable Entity",
-     *         @OA\JsonContent(ref="#/components/schemas/BaseUnprocessableEntityResource")
+     *         @OA\JsonContent(ref="#/components/schemas/ResponseUnauthorized")
      *     )
      * )
      */
     public function index(): JsonResponse
     {
         $data = $this->executor()->index();
-        return UserIndexResource::resource($data);
+        return $this->responseSuccess(UserResource::collection($data), 'Users list');
     }
 
     /**
@@ -54,6 +53,7 @@ class UserController extends Controller
      *     summary="Create user",
      *     description="Create user",
      *     operationId="usersStore",
+     *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
      *         description="Create user",
      *         required=true,
@@ -62,24 +62,33 @@ class UserController extends Controller
      *     @OA\Response(
      *         response=200,
      *         description="Success",
-     *         @OA\JsonContent(ref="#/components/schemas/UserStoreResource")
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 ref="#/components/schemas/UserResource"
+     *             ),
+     *             @OA\Property( property="message", type="string", example="User created" ),
+     *         )
      *     ),
      *     @OA\Response(
      *         response=401,
      *         description="Unauthorized",
-     *         @OA\JsonContent(ref="#/components/schemas/BaseUnauthorizedResource")
+     *         @OA\JsonContent(ref="#/components/schemas/ResponseUnauthorized")
      *     ),
      *     @OA\Response(
      *         response=422,
      *         description="Unprocessable Entity",
-     *         @OA\JsonContent(ref="#/components/schemas/BaseUnprocessableEntityResource")
+     *         @OA\JsonContent(ref="#/components/schemas/ResponseUnprocessableEntity")
      *     )
      * )
      */
     public function store(UserStoreRequest $request): JsonResponse
     {
         $created = $this->executor()->store($request->validated());
-        return UserStoreResource::resource($created);
+        return $this->responseSuccess(new UserResource($created), 'User created', 201);
     }
 
     /**
@@ -89,6 +98,7 @@ class UserController extends Controller
      *     summary="Get user",
      *     description="Get user",
      *     operationId="usersShow",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -102,25 +112,34 @@ class UserController extends Controller
      *     @OA\Response(
      *         response=200,
      *         description="Success",
-     *         @OA\JsonContent(ref="#/components/schemas/UserShowResource")
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 ref="#/components/schemas/UserResource"
+     *             ),
+     *             @OA\Property( property="message", type="string", example="User info" )
+     *         )
      *     ),
      *     @OA\Response(
      *         response=401,
      *         description="Unauthorized",
-     *         @OA\JsonContent(ref="#/components/schemas/BaseUnauthorizedResource")
+     *         @OA\JsonContent(ref="#/components/schemas/ResponseUnauthorized")
      *     ),
      *     @OA\Response(
      *         response=404,
      *         description="Not found",
-     *         @OA\JsonContent(ref="#/components/schemas/BaseNotFoundResource")
+     *         @OA\JsonContent(ref="#/components/schemas/ResponseNotFound")
      *     )
      * )
      */
     public function show(int $id): JsonResponse
     {
         $model = $this->executor()->show($id);
-        if (!$model) return BaseNotFoundResource::resource(null, 'User not found');
-        return UserShowResource::resource($model);
+        if (!$model) return $this->responseNotFound('User not found');
+        return $this->responseSuccess(new UserResource($model), 'User info');
     }
 
     /**
@@ -130,6 +149,7 @@ class UserController extends Controller
      *     summary="Update user",
      *     description="Update user",
      *     operationId="usersUpdate",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -146,27 +166,36 @@ class UserController extends Controller
      *         @OA\JsonContent(ref="#/components/schemas/UserUpdateRequest")
      *     ),
      *     @OA\Response(
-     *     response=200,
-     *     description="Success",
-     *     @OA\JsonContent(ref="#/components/schemas/UserUpdateResource")
-     *  ),
+     *         response=200,
+     *         description="Success",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 ref="#/components/schemas/UserResource"
+     *             ),
+     *             @OA\Property( property="message", type="string", example="User updated" )
+     *         )
+     *     ),
      *     @OA\Response(
-     *     response=401,
-     *     description="Unauthorized",
-     *     @OA\JsonContent(ref="#/components/schemas/BaseUnauthorizedResource")
-     * ),
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(ref="#/components/schemas/ResponseUnauthorized")
+     *     ),
      *     @OA\Response(
-     *     response=404,
-     *     description="Not found",
-     *     @OA\JsonContent(ref="#/components/schemas/BaseNotFoundResource")
-     * )
+     *         response=404,
+     *         description="Not found",
+     *         @OA\JsonContent(ref="#/components/schemas/ResponseNotFound")
+     *     )
      * )
      */
     public function update(UserUpdateRequest $request, int $id): JsonResponse
     {
         $model = $this->executor()->update($request->validated(), $id);
-        if (!$model) return BaseNotFoundResource::resource(null, 'User not found');
-        return UserUpdateResource::resource($model);
+        if (!$model) return $this->responseNotFound('User not found');
+        return $this->responseSuccess(new UserResource($model), 'User updated');
     }
 
     /**
@@ -176,6 +205,7 @@ class UserController extends Controller
      *     summary="Delete user",
      *     description="Delete user",
      *     operationId="usersDestroy",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -189,24 +219,29 @@ class UserController extends Controller
      *     @OA\Response(
      *         response=200,
      *         description="Success",
-     *         @OA\JsonContent(ref="#/components/schemas/BaseSuccessResource")
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property( property="data", type="null" ),
+     *             @OA\Property( property="message", type="string", example="User deleted" )
+     *         )
      *     ),
      *     @OA\Response(
      *         response=401,
      *         description="Unauthorized",
-     *         @OA\JsonContent(ref="#/components/schemas/BaseUnauthorizedResource")
+     *         @OA\JsonContent(ref="#/components/schemas/ResponseUnauthorized")
      *     ),
      *     @OA\Response(
      *         response=404,
      *         description="Not found",
-     *         @OA\JsonContent(ref="#/components/schemas/BaseNotFoundResource")
+     *         @OA\JsonContent(ref="#/components/schemas/ResponseNotFound")
      *     )
      * )
      */
     public function destroy(int $id): JsonResponse
     {
         $success = $this->executor()->destroy($id);
-        if (!$success) return BaseNotFoundResource::resource(null, 'User not found');
-        return BaseSuccessResource::resource(null, 'User deleted successfully');
+        if (!$success) return $this->responseNotFound('User not found');
+        return $this->responseSuccess(null, 'User deleted');
     }
 }
