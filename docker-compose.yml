@@ -51,16 +51,18 @@ services:
       default:
         ipv4_address: ${COMPOSE_PROJECT_NETWORK}.5
 
-  node:
-    container_name: node_${COMPOSE_PROJECT_NAME}
-    image: node:lts
-    working_dir: /app
-    user: $COMPOSE_USER_UID
-    volumes:
-      - ./:/app
-    networks:
-      default:
-        ipv4_address: ${COMPOSE_PROJECT_NETWORK}.5
+#  node:
+#    container_name: node_${COMPOSE_PROJECT_NAME}
+#    image: node:lts
+#    working_dir: /app
+#    user: $COMPOSE_USER_UID
+#    command:
+#      - /bin/bash
+#    volumes:
+#      - ./:/app
+#    networks:
+#      default:
+#        ipv4_address: ${COMPOSE_PROJECT_NETWORK}.5
 
 volumes:
   postgresql:
