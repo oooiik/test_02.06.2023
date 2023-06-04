@@ -51,7 +51,7 @@ class RoleTest extends TestCase
         ]);
     }
 
-    public function test_store_method()
+    public function test_store_method_success()
     {
         $this->actingAs($this->user);
         $response = $this->postJson(route('roles.store'), [
@@ -69,7 +69,30 @@ class RoleTest extends TestCase
         $this->assertDatabaseHas('roles', ['title' => 'test']);
     }
 
-    public function test_show_method()
+    public function test_store_method_fail()
+    {
+        $this->actingAs($this->user);
+        $response = $this->postJson(route('roles.store'), [
+            'title' => 'test',
+        ]);
+        $response->assertStatus(422);
+        $response->assertJsonStructure([
+            'message',
+            'errors' => [
+                'permissions',
+            ],
+        ]);
+    }
+
+    public function test_store_method_fail_unauthorized()
+    {
+        $response = $this->postJson(route('roles.store'), [
+            'title' => 'test',
+        ]);
+        $response->assertStatus(401);
+    }
+
+    public function test_show_method_success()
     {
         $this->actingAs($this->user);
         $role = Role::factory()->create();
@@ -84,7 +107,21 @@ class RoleTest extends TestCase
         ]);
     }
 
-    public function test_update_method()
+    public function test_show_method_fail()
+    {
+        $this->actingAs($this->user);
+        $response = $this->getJson(route('roles.show', 999));
+        $response->assertStatus(404);
+    }
+
+    public function test_show_method_fail_unauthorized()
+    {
+        $role = Role::factory()->create();
+        $response = $this->getJson(route('roles.show', $role->id));
+        $response->assertStatus(401);
+    }
+
+    public function test_update_method_success()
     {
         $this->actingAs($this->user);
         $role = Role::factory()->create();
@@ -102,12 +139,49 @@ class RoleTest extends TestCase
         $this->assertDatabaseHas('roles', ['title' => 'test']);
     }
 
-    public function test_destroy_method()
+    public function test_update_method_fail()
+    {
+        $this->actingAs($this->user);
+        $role = Role::factory()->create();
+        $response = $this->putJson(route('roles.update', $role->id), []);
+        $response->assertStatus(422);
+        $response->assertJsonStructure([
+            'message',
+            'errors' => [
+                'permissions',
+            ],
+        ]);
+    }
+
+    public function test_update_method_fail_unauthorized()
+    {
+        $role = Role::factory()->create();
+        $response = $this->putJson(route('roles.update', $role->id), [
+            'title' => 'test',
+        ]);
+        $response->assertStatus(401);
+    }
+
+    public function test_destroy_method_success()
     {
         $this->actingAs($this->user);
         $role = Role::factory()->create();
         $response = $this->deleteJson(route('roles.destroy', $role->id));
         $response->assertStatus(204);
         $this->assertDatabaseMissing('roles', ['id' => $role->id]);
+    }
+
+    public function test_destroy_method_fail()
+    {
+        $this->actingAs($this->user);
+        $response = $this->deleteJson(route('roles.destroy', 999));
+        $response->assertStatus(404);
+    }
+
+    public function test_destroy_method_fail_unauthorized()
+    {
+        $role = Role::factory()->create();
+        $response = $this->deleteJson(route('roles.destroy', $role->id));
+        $response->assertStatus(401);
     }
 }

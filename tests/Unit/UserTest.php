@@ -70,6 +70,12 @@ class UserTest extends TestCase
         $response->assertStatus(422);
     }
 
+    public function test_store_method_fail_unauthorized(): void
+    {
+        $response = $this->postJson('/api/users', []);
+        $response->assertStatus(401);
+    }
+
     public function test_show_method_success(): void
     {
         $this->actingAs($this->user);
@@ -95,6 +101,12 @@ class UserTest extends TestCase
         $this->actingAs($this->user);
         $response = $this->getJson('/api/users/0');
         $response->assertStatus(404);
+    }
+
+    public function test_show_method_fail_unauthorized(): void
+    {
+        $response = $this->getJson('/api/users/0');
+        $response->assertStatus(401);
     }
 
     public function test_update_method_success(): void
@@ -127,6 +139,12 @@ class UserTest extends TestCase
         $response->assertStatus(404);
     }
 
+    public function test_update_method_fail_unauthorized(): void
+    {
+        $response = $this->putJson('/api/users/0', []);
+        $response->assertStatus(401);
+    }
+
     public function test_destroy_method_success(): void
     {
         $this->actingAs($this->user);
@@ -143,6 +161,12 @@ class UserTest extends TestCase
         $this->actingAs($this->user);
         $response = $this->deleteJson('/api/users/0');
         $response->assertStatus(404);
+    }
+
+    public function test_destroy_method_fail_unauthorized(): void
+    {
+        $response = $this->deleteJson('/api/users/0');
+        $response->assertStatus(401);
     }
 
 }

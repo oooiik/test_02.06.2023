@@ -6,8 +6,10 @@ use App\Executor\RoleExecutor;
 use App\Http\Requests\Role\RoleStoreRequest;
 use App\Http\Requests\Role\RoleUpdateRequest;
 use App\Http\Resources\Role\RoleResource;
+use App\Models\Role;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 /**
  * @OA\Tag(
@@ -34,11 +36,18 @@ class RoleController extends Controller
      *             type="array",
      *             @OA\Items(ref="#/components/schemas/RoleResource")
      *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(ref="#/components/schemas/ResponseUnauthorized")
      *     )
      * )
      */
     public function index(): JsonResponse
     {
+        if (Gate::denies('viewAny', Role::class)) $this->responseUnauthorized();
+
         return $this->responseSuccess(RoleResource::collection($this->executor()->index()), 'Roles retrieved successfully');
     }
 
@@ -62,11 +71,23 @@ class RoleController extends Controller
      *             @OA\Property ( property="message", type="string", example="Role created successfully" ),
      *             @OA\Property ( property="data", ref="#/components/schemas/RoleResource" )
      *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(ref="#/components/schemas/ResponseUnauthorized")
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Unprocessable Entity",
+     *         @OA\JsonContent(ref="#/components/schemas/ResponseUnprocessableEntity")
      *     )
      * )
      */
     public function store(RoleStoreRequest $request): JsonResponse
     {
+        if (Gate::denies('create', Role::class)) $this->responseUnauthorized();
+
         $role = $this->executor()->store($request->all());
         return $this->responseCreated(new RoleResource($role), 'Role created successfully');
     }
@@ -93,11 +114,23 @@ class RoleController extends Controller
      *             @OA\Property ( property="message", type="string", example="Role retrieved successfully" ),
      *             @OA\Property ( property="data", ref="#/components/schemas/RoleResource" )
      *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(ref="#/components/schemas/ResponseUnauthorized")
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Not Found",
+     *         @OA\JsonContent(ref="#/components/schemas/ResponseNotFound")
      *     )
      * )
      */
     public function show($id): JsonResponse
     {
+        if (Gate::denies('view', Role::class)) $this->responseUnauthorized();
+
         $role = $this->executor()->show($id);
         if (is_null($role)) return $this->responseNotFound('Role not found');
         return $this->responseSuccess(new RoleResource($role), 'Role retrieved successfully');
@@ -130,11 +163,28 @@ class RoleController extends Controller
      *             @OA\Property ( property="message", type="string", example="Role updated successfully" ),
      *             @OA\Property ( property="data", ref="#/components/schemas/RoleResource" )
      *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(ref="#/components/schemas/ResponseUnauthorized")
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Not Found",
+     *         @OA\JsonContent(ref="#/components/schemas/ResponseNotFound")
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Unprocessable Entity",
+     *         @OA\JsonContent(ref="#/components/schemas/ResponseUnprocessableEntity")
      *     )
      * )
      */
     public function update(RoleUpdateRequest $request, $id): JsonResponse
     {
+        if (Gate::denies('update', Role::class)) $this->responseUnauthorized();
+
         $role = $this->executor()->update($request->all(), $id);
         if (is_null($role)) return $this->responseNotFound('Role not found');
         return $this->responseSuccess(new RoleResource($role), 'Role updated successfully');
@@ -161,11 +211,23 @@ class RoleController extends Controller
      *             @OA\Property ( property="success", type="boolean", example="true" ),
      *             @OA\Property ( property="message", type="string", example="Role deleted successfully" )
      *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(ref="#/components/schemas/ResponseUnauthorized")
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Not Found",
+     *         @OA\JsonContent(ref="#/components/schemas/ResponseNotFound")
      *     )
      * )
      */
     public function destroy($id): JsonResponse
     {
+        if (Gate::denies('delete', Role::class)) $this->responseUnauthorized();
+
         $role = $this->executor()->destroy($id);
         if (is_null($role)) return $this->responseNotFound('Role not found');
         return $this->responseSuccess(null, 'Role deleted successfully', 204);

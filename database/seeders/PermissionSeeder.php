@@ -21,6 +21,9 @@ class PermissionSeeder extends Seeder
             'read',
             'update',
             'delete',
+            'read-my',
+            'update-my',
+            'delete-my',
         ];
 
         foreach ($models as $model) {

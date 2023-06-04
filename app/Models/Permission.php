@@ -2,14 +2,18 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Model<\App\Models\Permission>
+ *
  * @property int $id
  * @property string $model
  * @property string $action
+ *
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Role[] $roles
  */
 class Permission extends Model
 {
@@ -68,4 +72,8 @@ class Permission extends Model
         return (bool)$role->intersect($this->roles)->count();
     }
 
+    public static function  findWithModelAndAction(string $model, string $action): ?Permission
+    {
+        return self::query()->where('model', $model)->where('action', $action)->first();
+    }
 }

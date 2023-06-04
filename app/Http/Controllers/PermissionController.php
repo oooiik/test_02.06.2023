@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Executor\PermissionExecutor;
 use App\Http\Resources\Permission\PermissionResource;
+use App\Models\Permission;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 /**
  * @OA\Tag(
@@ -41,11 +43,18 @@ class PermissionController extends Controller
      *         response=404,
      *         description="Resource not found",
      *         @OA\JsonContent(ref="#/components/schemas/ResponseNotFound")
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(ref="#/components/schemas/ResponseUnauthorized")
      *     )
      * )
      */
     public function index(Request $request): JsonResponse
     {
+        if (Gate::denies('index', Permission::class)) $this->responseUnauthorized();
+
         return $this->responseSuccess(PermissionResource::collection($this->executor()->index()), 'Permissions retrieved successfully.');
     }
 
@@ -72,11 +81,18 @@ class PermissionController extends Controller
      *         response=404,
      *         description="Resource not found",
      *         @OA\JsonContent(ref="#/components/schemas/ResponseNotFound")
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(ref="#/components/schemas/ResponseUnauthorized")
      *     )
      * )
      */
-    public function show(Request $request, int $id): JsonResponse
+    public function show(int $id): JsonResponse
     {
+        if (Gate::denies('show', Permission::class)) $this->responseUnauthorized();
+
         $permission = $this->executor()->show($id);
         if (empty($permission)) $this->responseNotFound('Permission not found.');
         return $this->responseSuccess(new PermissionResource($permission), 'Permission retrieved successfully.');

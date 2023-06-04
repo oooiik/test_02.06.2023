@@ -8,6 +8,19 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
+/**
+ * @extends \Illuminate\Database\Eloquent\Model<\App\Models\User>
+ *
+ * @property int $id
+ * @property string $name
+ * @property string $email
+ * @property string $phone
+ * @property string $address
+ * @property string $password
+ *
+ * @property-read \Illuminate\Database\Eloquent\Collection|\Laravel\Sanctum\PersonalAccessToken[] $tokens
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Role[] $roles
+ */
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
@@ -73,7 +86,7 @@ class User extends Authenticatable
     public function hasPermission(Permission $permission): bool
     {
         return $this->roles()
-            ->has('permission', '=', $permission->id)
+            ->has('permissions', '=', $permission->id)
             ->exists();
     }
 

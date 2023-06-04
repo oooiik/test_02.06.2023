@@ -6,7 +6,7 @@ use Tests\TestCase;
 
 class PermissionTest extends TestCase
 {
-    public function test_index_method()
+    public function test_index_method_success()
     {
         $this->actingAs($this->user);
         $response = $this->getJson(route('permissions.index'));
@@ -22,7 +22,13 @@ class PermissionTest extends TestCase
         ]);
     }
 
-    public function test_permission_show()
+    public function test_index_method_fail()
+    {
+        $response = $this->getJson(route('permissions.index'));
+        $response->assertStatus(401);
+    }
+
+    public function test_show_method_success()
     {
         $this->actingAs($this->user);
         $response = $this->getJson(route('permissions.show', ['permission' => 1]));
@@ -34,5 +40,11 @@ class PermissionTest extends TestCase
                 'action',
             ],
         ]);
+    }
+
+    public function test_show_method_fail()
+    {
+        $response = $this->getJson(route('permissions.show', ['permission' => 1]));
+        $response->assertStatus(401);
     }
 }

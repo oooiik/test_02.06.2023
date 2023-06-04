@@ -6,6 +6,15 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @extends \Illuminate\Database\Eloquent\Model<\App\Models\Role>
+ *
+ * @property int $id
+ * @property string $title
+ *
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User[] $users
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Permission[] $permissions
+ */
 class Role extends Model
 {
     use HasFactory;
