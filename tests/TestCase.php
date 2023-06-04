@@ -13,7 +13,6 @@ abstract class TestCase extends BaseTestCase
     use DatabaseMigrations, RefreshDatabase;
 
     protected User $user;
-    protected string $token;
     protected function setUp(): void
     {
         parent::setUp();
@@ -27,6 +26,5 @@ abstract class TestCase extends BaseTestCase
         // create admin user
         $this->user = \App\Models\User::factory()->create();
         $this->user->assignRole('admin');
-        $this->token = $this->user->createToken('auth_token')->plainTextToken;
     }
 }

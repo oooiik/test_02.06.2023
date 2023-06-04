@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Model<\App\Models\User>
@@ -21,7 +22,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property-read \Illuminate\Database\Eloquent\Collection|\Laravel\Sanctum\PersonalAccessToken[] $tokens
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Role[] $roles
  */
-class User extends Authenticatable
+class User extends Authenticatable implements JWTSubject
 {
     use HasApiTokens, HasFactory, Notifiable;
 
@@ -90,5 +91,13 @@ class User extends Authenticatable
             ->exists();
     }
 
+    public function getJWTIdentifier(): mixed
+    {
+        return $this->getKey();
+    }
 
+    public function getJWTCustomClaims(): array
+    {
+        return [];
+    }
 }

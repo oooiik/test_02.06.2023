@@ -14,6 +14,14 @@ use Illuminate\Routing\Controller as BaseController;
  *     title="Test 02.01.2023",
  *     version="0.1"
  * )
+ *
+ * @OA\SecurityScheme(
+ *     securityScheme="bearerAuth",
+ *     type="http",
+ *     scheme="bearer",
+ *     bearerFormat="JWT"
+ * )
+ *
  */
 //class OpenApi {}
 

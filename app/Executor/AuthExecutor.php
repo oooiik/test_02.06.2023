@@ -15,10 +15,10 @@ class AuthExecutor extends Executor
 
     public function login(array $validated): array|bool
     {
-        $ok = auth()->attempt($validated);
-        if (!$ok) return false;
+        $token = auth()->attempt($validated);
+        if (!$token) return false;
         return [
-            'token' => auth()->user()->createToken('auth_token')->plainTextToken,
+            'token' => $token,
             'user' => auth()->user()
         ];
     }
