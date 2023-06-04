@@ -52,7 +52,9 @@ class UserController extends Controller
      */
     public function index(): JsonResponse
     {
-        if (Gate::denies('viewAny', User::class)) $this->responseUnauthorized();
+        if (Gate::denies('viewAny', User::class)) {
+            $this->responseUnauthorized();
+        }
 
         $data = $this->executor()->index();
         return $this->responseSuccess(UserResource::collection($data), 'Users list');
@@ -99,7 +101,9 @@ class UserController extends Controller
      */
     public function store(UserStoreRequest $request): JsonResponse
     {
-        if (Gate::denies('create', User::class)) $this->responseUnauthorized();
+        if (Gate::denies('create', User::class)) {
+            $this->responseUnauthorized();
+        }
 
         $created = $this->executor()->store($request->validated());
         return $this->responseSuccess(new UserResource($created), 'User created', 201);
@@ -151,10 +155,14 @@ class UserController extends Controller
      */
     public function show(int $id): JsonResponse
     {
-        if (Gate::denies('view', [User::class, $id])) $this->responseUnauthorized();
+        if (Gate::denies('view', [User::class, $id])) {
+            $this->responseUnauthorized();
+        }
 
         $model = $this->executor()->show($id);
-        if (!$model) return $this->responseNotFound('User not found');
+        if (!$model) {
+            return $this->responseNotFound('User not found');
+        }
         return $this->responseSuccess(new UserResource($model), 'User info');
     }
 
@@ -209,10 +217,14 @@ class UserController extends Controller
      */
     public function update(UserUpdateRequest $request, int $id): JsonResponse
     {
-        if (Gate::denies('update', [User::class, $id])) $this->responseUnauthorized();
+        if (Gate::denies('update', [User::class, $id])) {
+            $this->responseUnauthorized();
+        }
 
         $model = $this->executor()->update($request->validated(), $id);
-        if (!$model) return $this->responseNotFound('User not found');
+        if (!$model) {
+            return $this->responseNotFound('User not found');
+        }
         return $this->responseSuccess(new UserResource($model), 'User updated');
     }
 
@@ -258,10 +270,14 @@ class UserController extends Controller
      */
     public function destroy(int $id): JsonResponse
     {
-        if (Gate::denies('delete', [User::class, $id])) $this->responseUnauthorized();
+        if (Gate::denies('delete', [User::class, $id])) {
+            $this->responseUnauthorized();
+        }
 
         $success = $this->executor()->destroy($id);
-        if (!$success) return $this->responseNotFound('User not found');
+        if (!$success) {
+            return $this->responseNotFound('User not found');
+        }
         return $this->responseSuccess(null, 'User deleted', 204);
     }
 }

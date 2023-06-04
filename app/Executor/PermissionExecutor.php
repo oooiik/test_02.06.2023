@@ -23,5 +23,4 @@ class PermissionExecutor extends Executor
     {
         return $this->model()->query()->find($id);
     }
-
 }

@@ -34,7 +34,11 @@ class PermissionController extends Controller
      *         description="Successful operation",
      *         @OA\JsonContent(
      *             type="object",
-     *             @OA\Property( property="data", type="array", @OA\Items(ref="#/components/schemas/PermissionResource")),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/PermissionResource")
+     *             ),
      *             @OA\Property( property="message", type="string", example="Permissions retrieved successfully."),
      *             @OA\Property( property="success", type="boolean", example=true)
      *         )
@@ -53,9 +57,14 @@ class PermissionController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        if (Gate::denies('index', Permission::class)) $this->responseUnauthorized();
+        if (Gate::denies('index', Permission::class)) {
+            $this->responseUnauthorized();
+        }
 
-        return $this->responseSuccess(PermissionResource::collection($this->executor()->index()), 'Permissions retrieved successfully.');
+        return $this->responseSuccess(
+            PermissionResource::collection($this->executor()->index()),
+            'Permissions retrieved successfully.'
+        );
     }
 
     /**
@@ -66,7 +75,12 @@ class PermissionController extends Controller
      *     summary="Get permission by id",
      *     description="Returns permission by id",
      *     security={{"bearerAuth":{}}},
-     *     @OA\Parameter( name="id", description="Permission id", required=true, in="path", @OA\Schema( type="integer" )),
+     *     @OA\Parameter(
+     *         name="id",
+     *         description="Permission id",
+     *         required=true, in="path",
+     *         @OA\Schema( type="integer" )
+     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="Successful operation",
@@ -91,10 +105,14 @@ class PermissionController extends Controller
      */
     public function show(int $id): JsonResponse
     {
-        if (Gate::denies('show', Permission::class)) $this->responseUnauthorized();
+        if (Gate::denies('show', Permission::class)) {
+            $this->responseUnauthorized();
+        }
 
         $permission = $this->executor()->show($id);
-        if (empty($permission)) $this->responseNotFound('Permission not found.');
+        if (empty($permission)) {
+            $this->responseNotFound('Permission not found.');
+        }
         return $this->responseSuccess(new PermissionResource($permission), 'Permission retrieved successfully.');
     }
 }

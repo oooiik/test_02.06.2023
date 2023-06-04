@@ -156,7 +156,7 @@ trait TraitJsonResponse
      */
     protected function responseBadRequest($message = null): JsonResponse
     {
-        return $this->responseError($message, 400);
+        return $this->responseError($message);
     }
 
     /**
@@ -175,5 +175,4 @@ trait TraitJsonResponse
     {
         return $this->responseError($message, 422);
     }
-
 }

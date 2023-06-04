@@ -13,6 +13,13 @@ use Illuminate\Http\Resources\Json\JsonResource;
  *     @OA\Property ( property="id", type="integer", example="1" ),
  *     @OA\Property ( property="name", type="string", example="admin" )
  * )
+ *
+ * @property int $id
+ * @property string $title
+ * @property PermissionResource[] $permissions
+ * @property string $created_at
+ * @property string $updated_at
+ * @property string $deleted_at
  */
 class RoleResource extends JsonResource
 {

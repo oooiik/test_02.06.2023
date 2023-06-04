@@ -4,7 +4,6 @@ namespace App\Policies;
 
 use App\Models\Permission;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class PermissionPolicy
 {
@@ -13,7 +12,7 @@ class PermissionPolicy
         return $user->hasPermission(Permission::findWithModelAndAction('permission', 'view'));
     }
 
-    public function view(User $user, Permission $permission): bool
+    public function view(User $user): bool
     {
         return $user->hasPermission(Permission::findWithModelAndAction('permission', 'view'));
     }

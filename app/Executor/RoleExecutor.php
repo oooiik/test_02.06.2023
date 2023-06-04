@@ -25,11 +25,15 @@ class RoleExecutor extends Executor
 
     public function update(array $validated, $id): Model|null
     {
-        /** @var Role $model */
+        /** @var ?Role $model */
         $model = $this->model()::query()->find($id);
-        if (!$model) return null;
+        if (is_null($model)) {
+            return null;
+        }
         $model->update($validated);
-        if (isset($validated['permissions'])) $model->syncPermissions($validated['permissions']);
+        if (isset($validated['permissions'])) {
+            $model->syncPermissions($validated['permissions']);
+        }
         return $model;
     }
 }

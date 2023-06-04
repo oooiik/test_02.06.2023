@@ -10,7 +10,7 @@ class MakeExecutor extends Command
 
     protected $description = 'Create a new executor class';
 
-    public function handle()
+    public function handle(): void
     {
         $name = $this->argument('name');
         $model = $this->option('model');
@@ -18,8 +18,12 @@ class MakeExecutor extends Command
             $this->error('You must specify a name or a model');
             return;
         }
-        if (!$model) $model = str_replace('Executor', '', $name);
-        if (!$name)  $name = $model . 'Executor';
+        if (!$model) {
+            $model = str_replace('Executor', '', $name);
+        }
+        if (!$name) {
+            $name = $model . 'Executor';
+        }
         $stub = file_get_contents(base_path('/stubs/executor.stub'));
         $stub = str_replace(['{{name}}', '{{ name }}'], $name, $stub);
         $stub = str_replace(['{{model}}', '{{ model }}'], $model, $stub);

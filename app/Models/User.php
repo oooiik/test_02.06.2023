@@ -4,14 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Laravel\Sanctum\PersonalAccessToken;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Model<\App\Models\User>
- *
  * @property int $id
  * @property string $name
  * @property string $email
@@ -19,8 +19,8 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
  * @property string $address
  * @property string $password
  *
- * @property-read \Illuminate\Database\Eloquent\Collection|\Laravel\Sanctum\PersonalAccessToken[] $tokens
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Role[] $roles
+ * @property-read Collection|PersonalAccessToken[] $tokens
+ * @property-read Collection|Role[] $roles
  */
 class User extends Authenticatable implements JWTSubject
 {
@@ -49,7 +49,7 @@ class User extends Authenticatable implements JWTSubject
         $this->attributes['password'] = bcrypt($password);
     }
 
-    public function roles(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    public function roles(): BelongsToMany
     {
         return $this->belongsToMany(Role::class, 'user_role');
     }
@@ -62,7 +62,7 @@ class User extends Authenticatable implements JWTSubject
     public function assignRole(string|Role $role): void
     {
         if (is_string($role)) {
-            $role = Role::where('title', $role)->firstOrFail();
+            $role = Role::query()->where('title', $role)->firstOrFail();
         }
         $this->roles()->attach($role);
     }
@@ -70,7 +70,7 @@ class User extends Authenticatable implements JWTSubject
     public function removeRole(string|Role $role): void
     {
         if (is_string($role)) {
-            $role = Role::where('title', $role)->firstOrFail();
+            $role = Role::query()->where('title', $role)->firstOrFail();
         }
         $this->roles()->detach($role);
     }

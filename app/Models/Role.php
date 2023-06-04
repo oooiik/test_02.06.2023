@@ -5,15 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Model<\App\Models\Role>
- *
  * @property int $id
  * @property string $title
  *
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User[] $users
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Permission[] $permissions
+ * @property-read Collection|User[] $users
+ * @property-read Collection|Permission[] $permissions
  */
 class Role extends Model
 {
@@ -25,12 +24,12 @@ class Role extends Model
         'title',
     ];
 
-    public function users(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class);
     }
 
-    public function permissions(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    public function permissions(): BelongsToMany
     {
         return $this->belongsToMany(
             Permission::class,
@@ -45,7 +44,7 @@ class Role extends Model
     public function givePermissionTo(string|Permission $permission): void
     {
         if (is_string($permission)) {
-            $permission = Permission::where('title', $permission)->firstOrFail();
+            $permission = Permission::query()->where('title', $permission)->firstOrFail();
         }
         $this->permissions()->attach($permission);
     }
@@ -53,7 +52,7 @@ class Role extends Model
     public function removePermissionTo(string|Permission $permission): void
     {
         if (is_string($permission)) {
-            $permission = Permission::where('title', $permission)->firstOrFail();
+            $permission = Permission::query()->where('title', $permission)->firstOrFail();
         }
         $this->permissions()->detach($permission);
     }
@@ -75,5 +74,4 @@ class Role extends Model
         }
         return $this->permissions()->where('permissions.id', $permission->id)->exists();
     }
-
 }

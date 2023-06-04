@@ -13,6 +13,10 @@ use Illuminate\Http\Resources\Json\JsonResource;
  *     @OA\Property ( property="model", type="string", example="user" ),
  *     @OA\Property ( property="action", type="string", example="create" )
  * )
+ *
+ * @property int $id
+ * @property string $model
+ * @property string $action
  */
 class PermissionResource extends JsonResource
 {

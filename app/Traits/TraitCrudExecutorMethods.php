@@ -28,7 +28,9 @@ trait TraitCrudExecutorMethods
     public function update($validated, $id): Model|Collection|Builder|array|null
     {
         $model = $this->model()::query()->find($id);
-        if (!$model) return null;
+        if (!$model) {
+            return null;
+        }
         $model->update($validated);
         return $model;
     }

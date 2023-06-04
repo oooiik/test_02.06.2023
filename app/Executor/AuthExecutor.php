@@ -4,6 +4,7 @@ namespace App\Executor;
 
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class AuthExecutor extends Executor
@@ -15,8 +16,10 @@ class AuthExecutor extends Executor
 
     public function login(array $validated): array|bool
     {
-        $token = auth()->attempt($validated);
-        if (!$token) return false;
+        $token = Auth::attempt($validated);
+        if (!$token) {
+            return false;
+        }
         return [
             'token' => $token,
             'user' => auth()->user()
@@ -25,24 +28,24 @@ class AuthExecutor extends Executor
 
     public function logout(): void
     {
-        auth()->user()->tokens()->delete();
+        /** @var User $user */
+        $user = Auth::user();
+        $user->tokens()->delete();
     }
 
     public function me(): Model|array|null
     {
-        return auth()->user();
+        /** @var User $user */
+        $user = Auth::user();
+        return $user;
     }
 
     public function register(array $validated): array|null
     {
         /** @var User $user */
         $user = $this->model()::query()->create($validated);
-        if (!$user) {
-            Log::error('Error creating user');
-            return null;
-        }
         $user->assignRole('user');
-        $ok = auth()->attempt([
+        $ok = Auth::attempt([
             'email' => $user->email,
             'password' => $validated['password']
         ]);
@@ -55,5 +58,4 @@ class AuthExecutor extends Executor
             'user' => $user
         ];
     }
-
 }

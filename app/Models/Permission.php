@@ -2,18 +2,17 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Model<\App\Models\Permission>
- *
  * @property int $id
  * @property string $model
  * @property string $action
  *
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Role[] $roles
+ * @property-read Collection|Role[] $roles
  */
 class Permission extends Model
 {
@@ -32,7 +31,7 @@ class Permission extends Model
         'action' => 'string',
     ];
 
-    public function roles(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    public function roles(): BelongsToMany
     {
         return $this->belongsToMany(Role::class, 'role_permission', 'permission_id', 'role_id');
     }
@@ -40,7 +39,7 @@ class Permission extends Model
     public function giveRoleTo(string|Role $role): void
     {
         if (is_string($role)) {
-            $role = Role::where('title', $role)->firstOrFail();
+            $role = Role::query()->where('title', $role)->firstOrFail();
         }
         $this->roles()->attach($role);
     }
@@ -48,7 +47,7 @@ class Permission extends Model
     public function removeRoleTo(string|Role $role): void
     {
         if (is_string($role)) {
-            $role = Role::where('title', $role)->firstOrFail();
+            $role = Role::query()->where('title', $role)->firstOrFail();
         }
         $this->roles()->detach($role);
     }
@@ -57,7 +56,7 @@ class Permission extends Model
     {
         $roles = collect($roles)->flatten()->map(function ($role) {
             if (is_string($role)) {
-                return Role::where('title', $role)->firstOrFail();
+                return Role::query()->where('title', $role)->firstOrFail();
             }
             return $role;
         })->all();
@@ -69,11 +68,13 @@ class Permission extends Model
         if (is_string($role)) {
             return $this->roles()->where('title', $role)->exists();
         }
-        return (bool)$role->intersect($this->roles)->count();
+        return $this->roles()->where('role.id', $role->id)->exists();
     }
 
-    public static function  findWithModelAndAction(string $model, string $action): ?Permission
+    public static function findWithModelAndAction(string $model, string $action): ?Permission
     {
-        return self::query()->where('model', $model)->where('action', $action)->first();
+        /** @var ?Permission $permission */
+        $permission = self::query()->where('model', $model)->where('action', $action)->first();
+        return $permission;
     }
 }
