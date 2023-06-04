@@ -34,7 +34,7 @@ abstract class Controller extends BaseController
 
     protected function executor(): Executor
     {
-        return $this->executorClass::make();
+        return new $this->executorClass();
     }
 
     protected function model(): Model
