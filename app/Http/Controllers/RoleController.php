@@ -40,13 +40,18 @@ class RoleController extends Controller
      *         response=401,
      *         description="Unauthorized",
      *         @OA\JsonContent(ref="#/components/schemas/ResponseUnauthorized")
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden",
+     *         @OA\JsonContent(ref="#/components/schemas/ResponseForbidden")
      *     )
      * )
      */
     public function index(): JsonResponse
     {
         if (Gate::denies('viewAny', Role::class)) {
-            $this->responseUnauthorized();
+            $this->responseForbidden();
         }
 
         return $this->responseSuccess(
@@ -85,13 +90,18 @@ class RoleController extends Controller
      *         response=422,
      *         description="Unprocessable Entity",
      *         @OA\JsonContent(ref="#/components/schemas/ResponseUnprocessableEntity")
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden",
+     *         @OA\JsonContent(ref="#/components/schemas/ResponseForbidden")
      *     )
      * )
      */
     public function store(RoleStoreRequest $request): JsonResponse
     {
         if (Gate::denies('create', Role::class)) {
-            $this->responseUnauthorized();
+            $this->responseForbidden();
         }
 
         $role = $this->executor()->store($request->all());
@@ -130,13 +140,18 @@ class RoleController extends Controller
      *         response=404,
      *         description="Not Found",
      *         @OA\JsonContent(ref="#/components/schemas/ResponseNotFound")
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden",
+     *         @OA\JsonContent(ref="#/components/schemas/ResponseForbidden")
      *     )
      * )
      */
     public function show($id): JsonResponse
     {
         if (Gate::denies('view', Role::class)) {
-            $this->responseUnauthorized();
+            $this->responseForbidden();
         }
 
         $role = $this->executor()->show($id);
@@ -188,13 +203,18 @@ class RoleController extends Controller
      *         response=422,
      *         description="Unprocessable Entity",
      *         @OA\JsonContent(ref="#/components/schemas/ResponseUnprocessableEntity")
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden",
+     *         @OA\JsonContent(ref="#/components/schemas/ResponseForbidden")
      *     )
      * )
      */
     public function update(RoleUpdateRequest $request, $id): JsonResponse
     {
         if (Gate::denies('update', Role::class)) {
-            $this->responseUnauthorized();
+            $this->responseForbidden();
         }
 
         $role = $this->executor()->update($request->all(), $id);
@@ -235,13 +255,18 @@ class RoleController extends Controller
      *         response=404,
      *         description="Not Found",
      *         @OA\JsonContent(ref="#/components/schemas/ResponseNotFound")
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden",
+     *         @OA\JsonContent(ref="#/components/schemas/ResponseForbidden")
      *     )
      * )
      */
     public function destroy($id): JsonResponse
     {
         if (Gate::denies('delete', Role::class)) {
-            $this->responseUnauthorized();
+            $this->responseForbidden();
         }
 
         $role = $this->executor()->destroy($id);

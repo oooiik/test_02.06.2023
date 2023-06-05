@@ -47,13 +47,18 @@ class UserController extends Controller
      *         response=401,
      *         description="Unauthorized",
      *         @OA\JsonContent(ref="#/components/schemas/ResponseUnauthorized")
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden",
+     *         @OA\JsonContent(ref="#/components/schemas/ResponseForbidden")
      *     )
      * )
      */
     public function index(): JsonResponse
     {
         if (Gate::denies('viewAny', User::class)) {
-            $this->responseUnauthorized();
+            $this->responseForbidden();
         }
 
         $data = $this->executor()->index();
@@ -96,13 +101,18 @@ class UserController extends Controller
      *         response=422,
      *         description="Unprocessable Entity",
      *         @OA\JsonContent(ref="#/components/schemas/ResponseUnprocessableEntity")
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden",
+     *         @OA\JsonContent(ref="#/components/schemas/ResponseForbidden")
      *     )
      * )
      */
     public function store(UserStoreRequest $request): JsonResponse
     {
         if (Gate::denies('create', User::class)) {
-            $this->responseUnauthorized();
+            $this->responseForbidden();
         }
 
         $created = $this->executor()->store($request->validated());
@@ -150,13 +160,16 @@ class UserController extends Controller
      *         response=404,
      *         description="Not found",
      *         @OA\JsonContent(ref="#/components/schemas/ResponseNotFound")
-     *     )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden",
      * )
      */
     public function show(int $id): JsonResponse
     {
         if (Gate::denies('view', [User::class, $id])) {
-            $this->responseUnauthorized();
+            $this->responseForbidden();
         }
 
         $model = $this->executor()->show($id);
@@ -212,13 +225,23 @@ class UserController extends Controller
      *         response=404,
      *         description="Not found",
      *         @OA\JsonContent(ref="#/components/schemas/ResponseNotFound")
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden",
+     *         @OA\JsonContent(ref="#/components/schemas/ResponseForbidden")
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Unprocessable Entity",
+     *         @OA\JsonContent(ref="#/components/schemas/ResponseUnprocessableEntity")
      *     )
      * )
      */
     public function update(UserUpdateRequest $request, int $id): JsonResponse
     {
         if (Gate::denies('update', [User::class, $id])) {
-            $this->responseUnauthorized();
+            $this->responseForbidden();
         }
 
         $model = $this->executor()->update($request->validated(), $id);
@@ -265,13 +288,18 @@ class UserController extends Controller
      *         response=404,
      *         description="Not found",
      *         @OA\JsonContent(ref="#/components/schemas/ResponseNotFound")
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden",
+     *         @OA\JsonContent(ref="#/components/schemas/ResponseForbidden")
      *     )
      * )
      */
     public function destroy(int $id): JsonResponse
     {
         if (Gate::denies('delete', [User::class, $id])) {
-            $this->responseUnauthorized();
+            $this->responseForbidden();
         }
 
         $success = $this->executor()->destroy($id);

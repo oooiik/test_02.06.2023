@@ -52,13 +52,18 @@ class PermissionController extends Controller
      *         response=401,
      *         description="Unauthorized",
      *         @OA\JsonContent(ref="#/components/schemas/ResponseUnauthorized")
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden",
+     *         @OA\JsonContent(ref="#/components/schemas/ResponseForbidden")
      *     )
      * )
      */
     public function index(Request $request): JsonResponse
     {
         if (Gate::denies('index', Permission::class)) {
-            $this->responseUnauthorized();
+            $this->responseForbidden();
         }
 
         return $this->responseSuccess(
@@ -100,13 +105,18 @@ class PermissionController extends Controller
      *         response=401,
      *         description="Unauthorized",
      *         @OA\JsonContent(ref="#/components/schemas/ResponseUnauthorized")
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden",
+     *         @OA\JsonContent(ref="#/components/schemas/ResponseForbidden")
      *     )
      * )
      */
     public function show(int $id): JsonResponse
     {
         if (Gate::denies('show', Permission::class)) {
-            $this->responseUnauthorized();
+            $this->responseForbidden();
         }
 
         $permission = $this->executor()->show($id);
