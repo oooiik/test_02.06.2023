@@ -17,6 +17,7 @@ class RoleExecutor extends Executor
 
     public function store(array $validated): Model
     {
+        $this->cacheForgot('index');
         /** @var Role $model */
         $model = $this->model()::query()->create($validated);
         $model->syncPermissions($validated['permissions']);
@@ -25,8 +26,11 @@ class RoleExecutor extends Executor
 
     public function update(array $validated, $id): Model|null
     {
+        $this->cacheForgot('index');
         /** @var ?Role $model */
-        $model = $this->model()::query()->find($id);
+        $model = $this->cacheGetOrSet('show_' . $id, function () use ($id) {
+            return $this->model()::query()->find($id);
+        });
         if (is_null($model)) {
             return null;
         }
@@ -34,6 +38,7 @@ class RoleExecutor extends Executor
         if (isset($validated['permissions'])) {
             $model->syncPermissions($validated['permissions']);
         }
+        $this->cacheSet('show_' . $id, $model);
         return $model;
     }
 }
