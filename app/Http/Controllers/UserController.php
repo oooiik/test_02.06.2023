@@ -164,6 +164,8 @@ class UserController extends Controller
      *     @OA\Response(
      *         response=403,
      *         description="Forbidden",
+     *         @OA\JsonContent(ref="#/components/schemas/ResponseForbidden")
+     *     )
      * )
      */
     public function show(int $id): JsonResponse

@@ -39,4 +39,6 @@ Route::middleware('auth:api')->group(function () {
         ->names('roles');
     Route::apiResource('/permissions', \App\Http\Controllers\PermissionController::class)
         ->names('permissions');
+    Route::apiResource('/statements', \App\Http\Controllers\StatementController::class)
+        ->names('statements');
 });

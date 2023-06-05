@@ -14,6 +14,7 @@ class PermissionSeeder extends Seeder
         $models = [
             'User',
             'Role',
+            'Statement',
         ];
 
         $actions = [
@@ -21,6 +22,7 @@ class PermissionSeeder extends Seeder
             'read',
             'update',
             'delete',
+            'create-my',
             'read-my',
             'update-my',
             'delete-my',

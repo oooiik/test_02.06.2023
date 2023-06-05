@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bf6959949a2a54dc006f3ae7e9990196",
+    "content-hash": "bc0aff69563a92be8d13025142adcbae",
     "packages": [
         {
             "name": "brick/math",
@@ -2546,6 +2546,59 @@
                 }
             ],
             "time": "2023-02-08T01:06:31+00:00"
+        },
+        {
+            "name": "oooiik/laravel-query-filter",
+            "version": "1.1.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/oooiik/laravel-query-filter.git",
+                "reference": "a48d0d1e906ee01d8589cc489b5d46403c1a027f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/oooiik/laravel-query-filter/zipball/a48d0d1e906ee01d8589cc489b5d46403c1a027f",
+                "reference": "a48d0d1e906ee01d8589cc489b5d46403c1a027f",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.3|^8.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Oooiik\\LaravelQueryFilter\\Providers\\LaravelQueryFilterServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Oooiik\\LaravelQueryFilter\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Obidjon Toshev",
+                    "email": "author@oooiik.com"
+                }
+            ],
+            "description": "In Laravel, it is convenient to write the query filter related to the model in a separate class",
+            "keywords": [
+                "filter",
+                "laravel",
+                "query",
+                "query filter"
+            ],
+            "support": {
+                "issues": "https://github.com/oooiik/laravel-query-filter/issues",
+                "source": "https://github.com/oooiik/laravel-query-filter/tree/1.1.3"
+            },
+            "time": "2022-11-09T11:59:09+00:00"
         },
         {
             "name": "phpoption/phpoption",

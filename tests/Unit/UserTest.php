@@ -14,7 +14,13 @@ class UserTest extends TestCase
 
         $user = User::factory()->create();
         $this->assertNotNull($user);
-        $this->assertDatabaseHas('users', $user->toArray());
+        $this->assertDatabaseHas('users', $user->makeHidden([
+            'email_verified_at',
+            'password',
+            'remember_token',
+            'created_at',
+            'updated_at',
+        ])->toArray());
 
         $users = User::factory()->count(3)->create();
         $this->assertCount(3, $users);
@@ -129,7 +135,13 @@ class UserTest extends TestCase
             ],
         ]);
 
-        $this->assertDatabaseHas('users', array_merge($make->toArray(), ['id' => $user->id]));
+        $this->assertDatabaseHas('users', array_merge($make->makeHidden([
+            'email_verified_at',
+            'password',
+            'remember_token',
+            'created_at',
+            'updated_at',
+        ])->toArray(), ['id' => $user->id]));
     }
 
     public function test_update_method_fail(): void

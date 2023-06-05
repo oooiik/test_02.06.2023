@@ -18,10 +18,14 @@ trait TraitCrudExecutorMethods
         return strtolower(class_basename($this->model()));
     }
 
-    public function index(): Collection|array|null
+    public function index($validated = []): Collection|array|null
     {
-        return $this->cacheGetOrSet('index', function () {
-            return $this->model()::query()->get();
+        return $this->cacheGetOrSet('index', function () use ($validated) {
+            if (method_exists($this->model(), 'filter')) {
+                return $this->model()::filter($validated)->get();
+            } else {
+                return $this->model()::query()->get();
+            }
         });
     }
 

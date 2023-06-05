@@ -16,6 +16,13 @@ class RolePermissionSeeder extends Seeder
 
         /** @var Role $user */
         $user = Role::where('title', 'user')->first();
-        $user->syncPermissions(Permission::where('model', 'user')->get());
+        $user->syncPermissions(
+            Permission::whereIn('action', [
+                'create-my',
+                'read-my',
+                'update-my',
+                'delete-my',
+            ])->get()
+        );
     }
 }

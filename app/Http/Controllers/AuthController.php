@@ -62,7 +62,9 @@ class AuthController extends Controller
     public function login(AuthLoginRequest $request): JsonResponse
     {
         $logged = $this->executor()->login($request->validated());
-        if (!$logged) return $this->responseUnauthorized('Invalid credentials');
+        if (!$logged) {
+            return $this->responseUnauthorized('Invalid credentials');
+        }
         return $this->responseSuccess([
             'user' => new UserResource($logged['user']),
             'token' => $logged['token']
@@ -128,7 +130,9 @@ class AuthController extends Controller
     public function me(): JsonResponse
     {
         $user = $this->executor()->me();
-        if (!$user) return $this->responseUnauthorized('Unauthorized');
+        if (!$user) {
+            return $this->responseUnauthorized('Unauthorized');
+        }
         return $this->responseSuccess(new UserResource($user), 'User retrieved successfully');
     }
 
@@ -169,7 +173,9 @@ class AuthController extends Controller
     public function register(AuthRegisterRequest $request): JsonResponse
     {
         $data = $this->executor()->register($request->validated());
-        if (!$data) return $this->responseError('Failed to register', 500);
+        if (!$data) {
+            return $this->responseError('Failed to register', 500);
+        }
         return $this->responseCreated([
             'user' => new UserResource($data['user']),
             'token' => $data['token']
