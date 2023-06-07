@@ -3,6 +3,7 @@
 namespace App\Traits;
 
 use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 trait TraitJsonResponse
 {
@@ -174,5 +175,33 @@ trait TraitJsonResponse
     protected function responseUnprocessableEntity($message = null): JsonResponse
     {
         return $this->responseError($message, 422);
+    }
+
+    /**
+     * @OA\Schema (
+     *     title="ResponseServerError",
+     *     description="Response server error",
+     *     schema="ResponseServerError",
+     *     example={
+     *         "success":false,
+     *         "message":"Server Error",
+     *     }
+     * )
+     */
+    protected function responseServerError($message = null): JsonResponse
+    {
+        return $this->responseError($message, 500);
+    }
+
+    /**
+     * @OA\Schema (
+     *     title="ResponseDownload",
+     *     description="Response download",
+     *     schema="ResponseDownload"
+     * )
+     */
+    protected function responseDownload($file, $name): BinaryFileResponse
+    {
+        return response()->download($file, $name);
     }
 }

@@ -5,7 +5,6 @@ namespace App\Traits;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Cache;
 
 trait TraitCrudExecutorMethods
 {
@@ -45,9 +44,7 @@ trait TraitCrudExecutorMethods
     public function update($validated, $id): Model|Collection|Builder|array|null
     {
         $this->cacheForgot('index');
-        $model = $this->cacheGetOrSet('show_' . $id, function () use ($id) {
-            return $this->model()::query()->find($id);
-        });
+        $model = $this->show($id);
         if (!$model) {
             return null;
         }
@@ -59,9 +56,7 @@ trait TraitCrudExecutorMethods
     public function destroy($id): bool|null
     {
         $this->cacheForgot('index');
-        $model = $this->cacheGetOrSet('show_' . $id, function () use ($id) {
-            return $this->model()::query()->find($id);
-        });
+        $model = $this->show($id);
         if (!$model) {
             return null;
         }
