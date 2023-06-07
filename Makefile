@@ -5,6 +5,9 @@ include .env
 echo-server: ## print server
 	@echo "Server link: http://${COMPOSE_PROJECT_NETWORK}.2/api/docs"
 
+open-server: ## open server
+	@open "http://${COMPOSE_PROJECT_NETWORK}.2/api/docs"
+
 build: create-env ## Build all containers
 	@docker compose build --no-cache
 
