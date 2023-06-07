@@ -41,4 +41,9 @@ Route::middleware('auth:api')->group(function () {
         ->names('permissions');
     Route::apiResource('/statements', \App\Http\Controllers\StatementController::class)
         ->names('statements');
+    Route::get('/attachments/{attachment}/download', [\App\Http\Controllers\AttachmentController::class, 'download'])
+        ->name('attachments.download');
+    Route::apiResource('/attachments', \App\Http\Controllers\AttachmentController::class)
+        ->only(['store', 'show', 'destroy'])
+        ->names('attachments');
 });

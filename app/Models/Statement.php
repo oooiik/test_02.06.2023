@@ -37,4 +37,14 @@ class Statement extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function attachments()
+    {
+        return $this->morphMany(
+            Attachment::class,
+            'attachment',
+            'attachment_type',
+            'attachment_id'
+        );
+    }
 }
